@@ -1,0 +1,25 @@
+{
+  "name": "nacoss-pay",
+  "version": "1.0.0",
+  "description": "Making nacoss payments online",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/panam-py/nacoss-pay.git"
+  },
+  "author": "Panam",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/panam-py/nacoss-pay/issues"
+  },
+  "homepage": "https://github.com/panam-py/nacoss-pay#readme",
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "mongoose": "^6.2.10",
+    "morgan": "^1.10.0"
+  }
+}
