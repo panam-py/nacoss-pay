@@ -9,6 +9,10 @@ const paymentSchema = new mongoose.Schema({
     type: String,
     required: [true, "Every payment attempt must have a session attached"],
   },
+  email: {
+    type: String,
+    require: [true, "Every payment must have an email attached"],
+  },
   reference: {
     type: String,
     required: [true, "Every payment must have a unique reference"],
@@ -24,8 +28,15 @@ const paymentSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  authorizationURL: String,
+  authorizationURL: {
+    type: String,
+    required: [true, "Every transaction requires an authorization URL."],
+  },
   timeOfPayment: Date,
+  amount: {
+    type: Number,
+    required: [true, "Every payment must have an amount"],
+  },
 });
 
 const Payment = new mongoose.model("Payment", paymentSchema);

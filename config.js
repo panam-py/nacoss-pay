@@ -7,6 +7,7 @@ const config = {
   DB: process.env.DB,
   ENV: process.env.ENV,
   API_KEY: process.env.API_KEY,
+  PAYSTACK_API_KEY: process.env.PAYSTACK_API_KEY,
 };
 
 module.exports = config;

@@ -1,5 +1,6 @@
 const Payment = require("../models/paymentModel");
 const config = require("../config");
+const axios = require("axios");
 
 const makeID = (length) => {
   var result = "";
@@ -41,11 +42,89 @@ exports.authorizeUser = (req, res, next) => {
   next();
 };
 
-// exports.initialize = async (req, res, next) => {
-//   try {
-//     const { name, session } = req.body;
-//   } catch (err) {}
-// };
+const paystackInit = async (amount, email, reference) => {
+  try {
+    const headers = {
+      Authorization: `BEARER ${config.PAYSTACK_API_KEY}`,
+      "Content-type": "application/json",
+    };
+
+    const params = {
+      email,
+      amount,
+      reference,
+      currency: "NGN",
+    };
+
+    let authURL;
+
+    const resp = await axios.post(
+      "https://api.paystack.co/transaction/initialize",
+      params,
+      { headers }
+    );
+
+    authURL = resp.data.data.authorization_url;
+
+    // console.log(authURL);
+
+    const payment = {
+      email,
+      reference,
+      amount: amount / 100,
+      authorizationURL: authURL,
+    };
+
+    console.log(payment);
+    return payment;
+  } catch (err) {
+    console.log("AN ERROR OCCURED", err.message);
+  }
+};
+
+exports.initialize = async (req, res, next) => {
+  try {
+    const { name, session, email, regNo, amount } = req.body;
+
+    if (!name || !session || !email || !regNo || !amount) {
+      return res(400).json({
+        status: "failed",
+        message:
+          "Please provide 'name', 'session', 'email', 'regNo' and 'amount' in request body",
+      });
+    }
+
+    const parsedAmount = parseInt(amount) * 100;
+
+    const payments = await Payment.find();
+    const referenceArr = [];
+
+    payments.map((payment) => {
+      referenceArr.push(payment.reference);
+    });
+
+    const reference = validateIDIsUnique(referenceArr);
+    const payment = await paystackInit(parsedAmount, email, reference);
+    payment.name = name;
+    payment.session = session;
+    payment.regNo = regNo;
+    payment.confirmed = false;
+
+    await Payment.insert(payment);
+
+    res.status(200).json({
+      status: "success",
+      message: "Payment initilialization sucessful",
+      data: { payment },
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      status: "failed",
+      message: "An Error occured",
+    });
+  }
+};
 
 exports.getPaymentDetailsByReference = async (req, res, next) => {
   try {
