@@ -183,7 +183,8 @@ exports.searchPaymentDetails = async (req, res, next) => {
     if (!paid || !q) {
       return res.status(400).json({
         status: "failed",
-        message: "Include q(search term) and paid attributes in request parameters",
+        message:
+          "Include q(search term) and paid attributes in request parameters",
       });
     }
 
@@ -226,6 +227,34 @@ exports.searchPaymentDetails = async (req, res, next) => {
       message: `${matches.length} payments found for the search term ${q}`,
       data: { payments: matches },
     });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      status: "failed",
+      message: "An Error occured",
+    });
+  }
+};
+
+exports.webHook = async (req, res, next) => {
+  try {
+    const { event, data } = req.body;
+    if (event === "charge.success" && data.status === "success") {
+      const reference = data.reference;
+
+      const payment = await Payment.find({ reference: reference });
+
+      if (payment) {
+        await Payment.findByIdAndUpdate(payment.id, {
+          confirmed: true,
+          timeOfPayment: Date.now(),
+        });
+      }
+
+      res.status(200).json({
+        status: "success",
+      });
+    }
   } catch (err) {
     console.log(err);
     return res.status(500).json({
