@@ -128,13 +128,13 @@ exports.initialize = async (req, res, next) => {
 
 exports.getPaymentDetailsByReference = async (req, res, next) => {
   try {
-    const { ref, paid } = req.body;
+    const { ref, paid } = req.query;
     let payments;
 
     if (!paid || !ref) {
       return res.status(400).json({
         status: "failed",
-        message: "Include ref and paid attributes in request body",
+        message: "Include ref and paid attributes in request params",
       });
     }
 
@@ -142,7 +142,7 @@ exports.getPaymentDetailsByReference = async (req, res, next) => {
       return res.status(400).json({
         status: "failed",
         message:
-          "paid attribute in request body can only be one of 'all' to return all payments stored in the DB or 'confirmed' to return only confirmed payments in the DB",
+          "paid attribute in request params can only be one of 'all' to return all payments stored in the DB or 'confirmed' to return only confirmed payments in the DB",
       });
     }
 
@@ -177,13 +177,13 @@ exports.getPaymentDetailsByReference = async (req, res, next) => {
 
 exports.searchPaymentDetails = async (req, res, next) => {
   try {
-    const { q, paid } = req.body;
+    const { q, paid } = req.query;
     let payments;
 
     if (!paid || !q) {
       return res.status(400).json({
         status: "failed",
-        message: "Include q(search term) and paid attributes in request body",
+        message: "Include q(search term) and paid attributes in request parameters",
       });
     }
 
@@ -191,7 +191,7 @@ exports.searchPaymentDetails = async (req, res, next) => {
       return res.status(400).json({
         status: "failed",
         message:
-          "paid attribute in request body can only be one of 'all' to return all payments stored in the DB or 'confirmed' to return only confirmed payments in the DB",
+          "paid attribute in request parameters can only be one of 'all' to return all payments stored in the DB or 'confirmed' to return only confirmed payments in the DB",
       });
     }
 
